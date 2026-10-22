@@ -1,24 +1,22 @@
 
-from kivy.lang import Builder
 from kivymd.app import MDApp
 
-KV = """
-MDScreen:
-    md_bg_color: self.theme_cls.backgroundColor
-
-    MDLabel:
-        text: "Welcome to Open Budget Tracker"
-        halign: "center"
-        font_style: "Headline"
-        role: "small"
-"""
+from app.screens.dashboard import load_dashboard
+from app.theme import AppColors
 
 
 class BudgetTrackerApp(MDApp):
+
     def build(self):
+        self.title = "Open Budget"
+
+        # Material Design theme
         self.theme_cls.theme_style = "Light"
-        self.theme_cls.primary_palette = "Blue"
-        return Builder.load_string(KV)
+        self.theme_cls.primary_palette = "Green"
+        self.colors = AppColors
+
+        # Load our dashboard
+        return load_dashboard()
 
 
 if __name__ == "__main__":
