@@ -30,6 +30,7 @@ class BudgetTrackerApp(MDApp):
 
     def on_start(self):
         self.refresh_dashboard()
+        self.show_home()
 
     def create_book(self):
         ids = self.root.ids
@@ -119,41 +120,36 @@ class BudgetTrackerApp(MDApp):
         return False
     
     
-    def toggle_books(self):
-        section = self.root.ids.books_section
+    def _set_visible(self, widget, visible):
+        """Show or hide a view without occupying space."""
+        widget.disabled = not visible
+        widget.opacity = 1 if visible else 0
+        widget.size_hint_y = None
+        widget.height = (
+            widget.minimum_height if visible else 0
+        )
 
-        section.disabled = not section.disabled
-        section.opacity = 0 if section.disabled else 1
-        section.height = 0 if section.disabled else section.minimum_height
+    def show_home(self):
+        ids = self.root.ids
+
+        self._set_visible(ids.home_view, True)
+        self._set_visible(ids.books_view, False)
+        self._set_visible(ids.create_section, False)
+
+    def show_books(self):
+        ids = self.root.ids
+
+        self._set_visible(ids.home_view, False)
+        self._set_visible(ids.books_view, True)
 
     def toggle_create_form(self):
         section = self.root.ids.create_section
 
-        opening = section.disabled
-
-        section.disabled = not opening
-        section.opacity = 1 if opening else 0
-
-        # Collapse the section when hidden
-        section.size_hint_y = None
-        section.height = (
-            section.minimum_height if opening else 0
+        self._set_visible(
+            section,
+            section.disabled
         )
 
-    def show_home(self):
-        self.root.ids.books_section.disabled = True
-        self.root.ids.books_section.opacity = 0
-        self.root.ids.books_section.height = 0
-
-        self.root.ids.create_section.disabled = True
-        self.root.ids.create_section.opacity = 0
-        self.root.ids.create_section.height = 0
-
-    def show_books(self):
-        section = self.root.ids.books_section
-        section.disabled = False
-        section.opacity = 1
-        section.height = section.minimum_height
-
+    
 if __name__ == "__main__":
     BudgetTrackerApp().run()
