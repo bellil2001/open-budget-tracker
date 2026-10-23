@@ -105,4 +105,25 @@ class BookManager:
 
     def delete_book(self, book_id):
         return self.database.delete_book(book_id)
+    
+    
+    def rename_book(self, book_id: int, new_name: str):
+        """Rename a book without changing its currency."""
+
+        book = self.get_book(book_id)
+
+        if book is None:
+            return False
+
+        new_name = new_name.strip()
+
+        if not new_name:
+            raise ValueError("Book name cannot be empty.")
+
+        return self.database.update_book(
+            book_id,
+            new_name,
+            book.currency
+        )
+
 

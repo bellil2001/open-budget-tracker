@@ -149,3 +149,36 @@ def test_nonexistent_book_operations(manager):
     assert manager.archive_book(999) is False
     assert manager.restore_book(999) is False
     assert manager.delete_book(999) is False
+
+
+def test_rename_book(manager):
+    book = manager.create_book(
+        "Old Name", "TND", "500"
+    )
+
+    result = manager.rename_book(
+        book.id, "My Savings"
+    )
+
+    assert result is True
+
+    renamed = manager.get_book(book.id)
+
+    assert renamed.name == "My Savings"
+    assert renamed.currency == "TND"
+    assert renamed.opening_balance == Decimal("500")
+
+
+def test_rename_nonexistent_book(manager):
+    assert manager.rename_book(
+        999, "Missing"
+    ) is False
+
+
+def test_rename_empty_name(manager):
+    book = manager.create_book(
+        "Personal", "EUR", "100"
+    )
+
+    with pytest.raises(ValueError):
+        manager.rename_book(book.id, "   ")
