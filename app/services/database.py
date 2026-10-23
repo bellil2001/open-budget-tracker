@@ -82,6 +82,47 @@ class Database:
                 dict(row)
                 for row in cursor.fetchall()
             ]
+    
+    def update_book(self, book_id, name, currency):
+        """Update the name and currency of a book."""
 
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.execute(
+                """
+                UPDATE books
+                SET name = ?, currency = ?
+                WHERE id = ?
+                """,
+                (name, currency, book_id)
+            )
 
-            
+            return cursor.rowcount > 0
+
+    def set_book_archived(self, book_id, archived):
+        """Archive or restore a book."""
+
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.execute(
+                """
+                UPDATE books
+                SET is_archived = ?
+                WHERE id = ?
+                """,
+                (int(archived), book_id)
+            )
+
+            return cursor.rowcount > 0
+
+    def delete_book(self, book_id):
+        """Permanently delete a book."""
+
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.execute(
+                """
+                DELETE FROM books
+                WHERE id = ?
+                """,
+                (book_id,)
+            )
+
+            return cursor.rowcount > 0

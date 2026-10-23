@@ -76,3 +76,33 @@ class BookManager:
                 return book
 
         return None
+    
+    
+    def update_book(self, book_id, name, currency):
+
+        name = name.strip()
+        currency = currency.strip().upper()
+
+        if not name:
+            raise ValueError("Book name cannot be empty.")
+
+        if len(currency) != 3 or not currency.isalpha():
+            raise ValueError("Invalid currency code.")
+
+        return self.database.update_book(
+            book_id, name, currency
+        )
+
+    def archive_book(self, book_id):
+        return self.database.set_book_archived(
+            book_id, True
+        )
+
+    def restore_book(self, book_id):
+        return self.database.set_book_archived(
+            book_id, False
+        )
+
+    def delete_book(self, book_id):
+        return self.database.delete_book(book_id)
+

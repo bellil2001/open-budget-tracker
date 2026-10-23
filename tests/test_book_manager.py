@@ -93,3 +93,59 @@ def test_invalid_books(manager):
 
     with pytest.raises(ValueError):
         manager.create_book("Test", "EUR", "NaN")
+
+
+def test_update_book(manager):
+
+    book = manager.create_book(
+        "Old Name", "TND", "100"
+    )
+
+    result = manager.update_book(
+        book.id, "New Name", "EUR"
+    )
+
+    assert result is True
+
+    updated = manager.get_book(book.id)
+
+    assert updated.name == "New Name"
+    assert updated.currency == "EUR"
+
+
+def test_archive_restore_book(manager):
+
+    book = manager.create_book(
+        "Savings", "EUR", "500"
+    )
+
+    assert manager.archive_book(book.id) is True
+
+    archived = manager.database.get_all_books()
+    assert archived[0]["is_archived"] == 1
+
+    assert manager.restore_book(book.id) is True
+
+    restored = manager.database.get_all_books()
+    assert restored[0]["is_archived"] == 0
+
+
+def test_delete_book(manager):
+
+    book = manager.create_book(
+        "Temporary", "USD", "100"
+    )
+
+    assert manager.delete_book(book.id) is True
+    assert manager.get_book(book.id) is None
+
+
+def test_nonexistent_book_operations(manager):
+
+    assert manager.update_book(
+        999, "Missing", "EUR"
+    ) is False
+
+    assert manager.archive_book(999) is False
+    assert manager.restore_book(999) is False
+    assert manager.delete_book(999) is False
