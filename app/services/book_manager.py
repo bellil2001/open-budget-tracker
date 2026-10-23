@@ -1,46 +1,77 @@
 
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from app.models.book import Book
+from app.services.database import Database
 
 
 class BookManager:
-    def __init__(self):
-        self.books = []
-        self.next_id = 1
+    def __init__(self, database: Database):
+        self.database = database
+        self.database.initialize()
 
-    def create_book(self, name, currency, opening_balance="0"):
+    def create_book(
+        self,
+        name: str,
+        currency: str,
+        opening_balance="0"
+    ) -> Book:
+
         name = name.strip()
         currency = currency.strip().upper()
 
         if not name:
             raise ValueError("Book name cannot be empty.")
 
-        if not currency:
-            raise ValueError("Currency cannot be empty.")
+        if len(currency) != 3 or not currency.isalpha():
+            raise ValueError(
+                "Currency must be a 3-letter code."
+            )
 
-        balance = Decimal(str(opening_balance))
+        try:
+            balance = Decimal(str(opening_balance))
+        except (InvalidOperation, ValueError):
+            raise ValueError(
+                "Invalid opening balance."
+            ) from None
 
         if not balance.is_finite():
-            raise ValueError("Opening balance must be finite.")
+            raise ValueError(
+                "Opening balance must be finite."
+            )
 
-        book = Book(
-            id=self.next_id,
+        book_id = self.database.save_book(
             name=name,
             currency=currency,
-            opening_balance=balance,
+            opening_balance=balance
         )
 
-        self.books.append(book)
-        self.next_id += 1
+        return Book(
+            id=book_id,
+            name=name,
+            currency=currency,
+            opening_balance=balance
+        )
 
-        return book
+    def get_all_books(self) -> list[Book]:
 
-    def get_all_books(self):
-        return list(self.books)
+        rows = self.database.get_all_books()
 
-    def get_book(self, book_id):
-        for book in self.books:
+        return [
+            Book(
+                id=row["id"],
+                name=row["name"],
+                currency=row["currency"],
+                opening_balance=Decimal(
+                    row["opening_balance"]
+                )
+            )
+            for row in rows
+        ]
+
+    def get_book(self, book_id: int):
+
+        for book in self.get_all_books():
             if book.id == book_id:
                 return book
 
