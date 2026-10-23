@@ -1,6 +1,7 @@
 
 from kivy.lang import Builder
 
+# Register our reusable component
 from app.components.balance_card import BalanceCard
 
 
@@ -10,82 +11,138 @@ MDScreen:
 
     MDBoxLayout:
         orientation: "vertical"
-        padding: "20dp"
-        spacing: "14dp"
-
-        MDLabel:
-            text: "Open Budget"
-            font_style: "Headline"
-            role: "medium"
-            adaptive_height: True
-            color: app.colors.TEXT_PRIMARY
-
-        MDLabel:
-            id: current_book
-            text: "No book selected"
-            adaptive_height: True
-
-        BalanceCard:
-            id: balance_card
-            balance_text: "0.000 TND"
-
-        MDLabel:
-            text: "Your Books"
-            adaptive_height: True
-            font_style: "Title"
-            role: "large"
+        spacing: "0dp"
 
         ScrollView:
-            size_hint_y: 1
+            do_scroll_x: False
 
             MDBoxLayout:
-                id: book_list
                 orientation: "vertical"
                 adaptive_height: True
-                spacing: "8dp"
+                padding: "20dp"
+                spacing: "18dp"
 
-        MDLabel:
-            text: "Create New Book"
-            adaptive_height: True
-            font_style: "Title"
-            role: "medium"
+                MDLabel:
+                    text: "Open Budget"
+                    font_style: "Headline"
+                    role: "medium"
+                    adaptive_height: True
+                    color: app.colors.TEXT_PRIMARY
 
-        TextInput:
-            id: book_name
-            hint_text: "Book name"
-            multiline: False
+                MDButton:
+                    style: "text"
+                    on_release: app.toggle_books()
+
+                    MDButtonText:
+                        id: current_book
+                        text: "Select a book"
+
+                BalanceCard:
+                    id: balance_card
+                    balance_text: "0.000 TND"
+
+                MDLabel:
+                    text: "Your Books"
+                    font_style: "Title"
+                    role: "large"
+                    adaptive_height: True
+
+                MDBoxLayout:
+                    id: books_section
+                    orientation: "vertical"
+                    adaptive_height: True
+                    spacing: "12dp"
+                    size_hint_y: None
+                    height: self.minimum_height if not self.disabled else 0
+                    disabled: True
+                    opacity: 0
+
+                    MDBoxLayout:
+                        id: book_list
+                        orientation: "vertical"
+                        adaptive_height: True
+                        spacing: "8dp"
+
+                    MDButton:
+                        style: "tonal"
+                        on_release: app.toggle_create_form()
+
+                        MDButtonText:
+                            text: "+ Create New Book"
+
+                MDBoxLayout:
+                    id: create_section
+                    orientation: "vertical"
+                    adaptive_height: True
+                    spacing: "12dp"
+                    opacity: 0
+                    disabled: True
+                    size_hint_y: None
+                    height: 0
+                    size_hint_y: None
+                    height: self.minimum_height if not self.disabled else 0
+
+                    MDLabel:
+                        text: "Create New Book"
+                        adaptive_height: True
+                        font_style: "Title"
+                        role: "medium"
+
+                    TextInput:
+                        id: book_name
+                        hint_text: "Book name"
+                        multiline: False
+                        size_hint_y: None
+                        height: "48dp"
+
+                    TextInput:
+                        id: book_currency
+                        text: "TND"
+                        hint_text: "Currency"
+                        multiline: False
+                        size_hint_y: None
+                        height: "48dp"
+
+                    TextInput:
+                        id: opening_balance
+                        text: "0"
+                        hint_text: "Opening balance"
+                        multiline: False
+                        size_hint_y: None
+                        height: "48dp"
+
+                    MDLabel:
+                        id: status_label
+                        text: ""
+                        adaptive_height: True
+
+                    MDButton:
+                        style: "filled"
+                        on_release: app.create_book()
+
+                        MDButtonText:
+                            text: "Save Book"
+
+        MDBoxLayout:
             size_hint_y: None
-            height: "48dp"
+            height: "60dp"
+            padding: "12dp"
+            spacing: "8dp"
+            md_bg_color: app.colors.SURFACE
 
-        TextInput:
-            id: book_currency
-            text: "TND"
-            hint_text: "Currency (TND, EUR, USD)"
-            multiline: False
-            size_hint_y: None
-            height: "48dp"
+            MDButton:
+                style: "text"
+                on_release: app.show_home()
 
-        TextInput:
-            id: opening_balance
-            text: "0"
-            hint_text: "Opening balance"
-            multiline: False
-            input_filter: "float"
-            size_hint_y: None
-            height: "48dp"
+                MDButtonText:
+                    text: "Home"
 
-        MDLabel:
-            id: status_label
-            text: ""
-            adaptive_height: True
+            MDButton:
+                style: "text"
+                on_release: app.show_books()
 
-        MDButton:
-            style: "filled"
-            pos_hint: {"center_x": 0.5}
-            on_release: app.create_book()
-
-            MDButtonText:
-                text: "Create Book"
+                MDButtonText:
+                    text: "Books"
 """
 
 

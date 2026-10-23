@@ -55,6 +55,7 @@ class BudgetTrackerApp(MDApp):
         ids.status_label.text = "Book created successfully!"
 
         self.refresh_dashboard()
+        self.show_home()
 
     def select_book(self, book_id):
         self.active_book_id = book_id
@@ -116,7 +117,43 @@ class BudgetTrackerApp(MDApp):
                 return bool(row["is_archived"])
 
         return False
+    
+    
+    def toggle_books(self):
+        section = self.root.ids.books_section
 
+        section.disabled = not section.disabled
+        section.opacity = 0 if section.disabled else 1
+        section.height = 0 if section.disabled else section.minimum_height
+
+    def toggle_create_form(self):
+        section = self.root.ids.create_section
+
+        opening = section.disabled
+
+        section.disabled = not opening
+        section.opacity = 1 if opening else 0
+
+        # Collapse the section when hidden
+        section.size_hint_y = None
+        section.height = (
+            section.minimum_height if opening else 0
+        )
+
+    def show_home(self):
+        self.root.ids.books_section.disabled = True
+        self.root.ids.books_section.opacity = 0
+        self.root.ids.books_section.height = 0
+
+        self.root.ids.create_section.disabled = True
+        self.root.ids.create_section.opacity = 0
+        self.root.ids.create_section.height = 0
+
+    def show_books(self):
+        section = self.root.ids.books_section
+        section.disabled = False
+        section.opacity = 1
+        section.height = section.minimum_height
 
 if __name__ == "__main__":
     BudgetTrackerApp().run()
